@@ -11,7 +11,6 @@ function ProtectedRoute({ children }) {
 
   useEffect(() => {
     if (!token) {
-      setStatus('unauthorized');
       return;
     }
 
@@ -33,7 +32,7 @@ function ProtectedRoute({ children }) {
           setStatus('authorized');
         }
 
-      } catch (error) {
+      } catch {
         if (active) {
           setStatus('error');
         }
@@ -47,7 +46,7 @@ function ProtectedRoute({ children }) {
     };
   }, [token]);
 
-  if (status === 'unauthorized') {
+  if (!token) {
     return <Navigate to="/signin" replace />;
   }
 
