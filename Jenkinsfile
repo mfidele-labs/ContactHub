@@ -57,6 +57,28 @@ pipeline {
                 sh 'docker build -t contacthub-frontend --build-arg VITE_API_URL= ./frontend'
             }
         }
+
+        stage('Push Docker Images to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    sh '''
+                        echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
+
+                        docker tag contacthub-backend:latest "$DOCKERHUB_USER/contacthub-backend:latest"
+                        docker tag contacthub-frontend:latest "$DOCKERHUB_USER/contacthub-frontend:latest"
+
+                        docker push "$DOCKERHUB_USER/contacthub-backend:latest"
+                        docker push "$DOCKERHUB_USER/contacthub-frontend:latest"
+
+                        docker logout
+                    '''
+                }
+            }
+        }
     }
 
     post {
