@@ -50,6 +50,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Docker Images') {
+            steps {
+                sh 'docker build -t contacthub-backend ./backend'
+                sh 'docker build -t contacthub-frontend --build-arg VITE_API_URL= ./frontend'
+            }
+        }
     }
 
     post {
